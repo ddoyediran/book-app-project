@@ -30,11 +30,21 @@ courseRouter.get("/api/courses/:id", (req, res) => {
 
 // POST course to the list
 courseRouter.post("/api/courses", (req, res) => {
-  const newCourse = { id: courseList.length + 1, ...req.body };
+  const resultVal = validate({ name: req.body.name });
 
-  courseList.push(newCourse);
+  if (resultVal) {
+    const newCourse = { id: courseList.length + 1, ...resultVal.value };
 
-  res.status(200).json({ message: "A new course has been added" });
+    courseList.push(newCourse);
+
+    return res.status(200).json({ message: "A new course has been added" });
+  }
+
+  //   const newCourse = { id: courseList.length + 1, ...req.body };
+
+  //   courseList.push(newCourse);
+
+  //   res.status(200).json({ message: "A new course has been added" });
 });
 
 // DELETE a course from the list
@@ -55,5 +65,13 @@ courseRouter.delete("/api/courses/:id", (req, res) => {
 
   return res.status(200).json({ message: "Course deleted successfully!" });
 });
+
+// Helper Function
+// INPUT: an object paramter that contain property to validate
+// OUTPUT: return outcome of the validation
+function validate(inputObj) {
+  const value = schema.validate(inputObj);
+  return value;
+}
 
 module.exports = courseRouter;
